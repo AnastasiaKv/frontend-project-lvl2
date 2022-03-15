@@ -10,6 +10,9 @@
   "bin": {
     "gendiff": "bin/gendiff.js"
   },
+  "simple-git-hooks": {
+    "pre-push": "make lint"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/AnastasiaKv/frontend-project-lvl2.git"
@@ -22,5 +25,11 @@
   "homepage": "https://github.com/AnastasiaKv/frontend-project-lvl2#readme",
   "dependencies": {
     "commander": "^9.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.11.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.25.4",
+    "simple-git-hooks": "^2.7.0"
   }
 }
