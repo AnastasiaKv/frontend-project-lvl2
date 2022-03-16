@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import genDiff from '../src/searchFilesDiff.js';
 
-// eslint-disable-next-line no-underscore-dangle
+/* eslint-disable */
 const diff = {
   "- follow": false,
   "  host": "hexlet.io",
