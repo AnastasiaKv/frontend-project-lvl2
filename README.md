@@ -35,4 +35,4 @@ gendiff filepath1 filepath2
 
 ## Demo
 
-[![asciicast](https://asciinema.org/a/477390.svg)](https://asciinema.org/a/477390)
+[![asciicast](https://asciinema.org/a/477427.svg)](https://asciinema.org/a/477427)
