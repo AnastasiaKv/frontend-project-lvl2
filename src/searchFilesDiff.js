@@ -18,7 +18,7 @@ const readFile = (filename) => fs.readFileSync(getAbsolutePath(filename), 'utf-8
 
 const getFileData = (filepath) => {
   try {
-    const rawdata = readFile(filepath)
+    const rawdata = readFile(filepath);
     return JSON.parse(rawdata);
   } catch (error) {
     console.error(error);
