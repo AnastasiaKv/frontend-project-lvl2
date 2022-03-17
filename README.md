@@ -1,8 +1,9 @@
-### Hexlet tests and linter status:
+### Tests and linter status:
 
 [![Actions Status](https://github.com/AnastasiaKv/frontend-project-lvl2/workflows/hexlet-check/badge.svg)](https://github.com/AnastasiaKv/frontend-project-lvl2/actions)
-[![Maintainability](https://api.codeclimate.com/v1/badges/ea3eaec9ef65407b12b3/maintainability)](https://codeclimate.com/github/AnastasiaKv/frontend-project-lvl2/maintainability)
 [![tests-check](https://github.com/AnastasiaKv/frontend-project-lvl2/actions/workflows/tests-check.yml/badge.svg)](https://github.com/AnastasiaKv/frontend-project-lvl2/actions/workflows/tests-check.yml)
+[![Maintainability](https://api.codeclimate.com/v1/badges/ea3eaec9ef65407b12b3/maintainability)](https://codeclimate.com/github/AnastasiaKv/frontend-project-lvl2/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/ea3eaec9ef65407b12b3/test_coverage)](https://codeclimate.com/github/AnastasiaKv/frontend-project-lvl2/test_coverage)
 
 # frontend-project-lvl2
 
