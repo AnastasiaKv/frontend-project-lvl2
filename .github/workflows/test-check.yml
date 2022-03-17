@@ -1,0 +1,14 @@
+name: linter-check
+
+on: push
+
+jobs:
+  test-job:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+      - run: make install
+      - run: make lint
+      - run: make test
