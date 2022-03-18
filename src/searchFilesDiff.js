@@ -1,28 +1,18 @@
 import _ from 'lodash';
 import * as fs from 'fs';
 import * as path from 'path';
-// import * as process from 'process';
-import { fileURLToPath } from 'url';
+import process from 'process';
+import parser from './parsers.js';
 
-/*
-const normalizePath = (fp) => (
-  !path.isAbsolute(fp) ? path.resolve(process.cwd(), fp) : path.normalize(fp)
-);
-*/
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const getAbsolutePath = (filename) => path.join(__dirname, filename);
-const readFile = (filename) => fs.readFileSync(getAbsolutePath(filename), 'utf-8');
+const normalizePath = (fp) => !path.isAbsolute(fp) ? path.resolve(process.cwd(), fp) : path.normalize(fp);
+const readFile = (filename) => fs.readFileSync(normalizePath(filename), 'utf-8');
 
 const getFileData = (filepath) => {
   try {
-    const rawdata = readFile(filepath);
-    return JSON.parse(rawdata);
-  } catch (error) {
-    console.error(error);
-    return null;
+    return parser(readFile(filepath), path.extname(filepath))
+  } catch (e) {
+    console.error(`${filepath} not found!`)
+    throw e;
   }
 };
 
