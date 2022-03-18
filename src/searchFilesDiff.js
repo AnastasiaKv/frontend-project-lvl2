@@ -4,14 +4,16 @@ import * as path from 'path';
 import process from 'process';
 import parser from './parsers.js';
 
-const normalizePath = (fp) => !path.isAbsolute(fp) ? path.resolve(process.cwd(), fp) : path.normalize(fp);
+const normalizePath = (fp) => (
+  !path.isAbsolute(fp) ? path.resolve(process.cwd(), fp) : path.normalize(fp)
+);
 const readFile = (filename) => fs.readFileSync(normalizePath(filename), 'utf-8');
 
 const getFileData = (filepath) => {
   try {
-    return parser(readFile(filepath), path.extname(filepath))
+    return parser(readFile(filepath), path.extname(filepath));
   } catch (e) {
-    console.error(`${filepath} not found!`)
+    console.error(`${filepath} not found!`);
     throw e;
   }
 };
