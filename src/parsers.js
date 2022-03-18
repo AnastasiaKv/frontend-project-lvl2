@@ -1,0 +1,10 @@
+import yaml from 'js-yaml';
+
+export default (data, ext) => {
+  switch (ext) {
+    case '.yml':
+    case '.yaml': return yaml.load(data);
+    case '.json': return JSON.parse(data);
+    default: return data;
+  }
+};
