@@ -1,10 +1,11 @@
 env:
   node: true
   es2021: true
+  jest: true
 extends:
   - airbnb-base
 parserOptions:
-  ecmaVersion: 2020 # Включает поддержку конструкции import.meta.url
+  ecmaVersion: latest
   sourceType: module
 rules:
   no-console: 0
