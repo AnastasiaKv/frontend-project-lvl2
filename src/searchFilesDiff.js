@@ -1,88 +1,59 @@
 import _ from 'lodash';
 import * as fs from 'fs';
 import * as path from 'path';
-import process from 'process';
 import parser from './parsers.js';
-import { stylish } from './formaters.js';
+import formatter from './formatters/index.js';
 
-const normalizePath = (fp) => (
-  path.isAbsolute(fp) ? path.normalize(fp) : path.resolve(process.cwd(), fp)
-);
+const normalizePath = (fp) => (path.isAbsolute(fp) ? path.normalize(fp) : path.resolve(fp));
 const readFile = (filename) => fs.readFileSync(normalizePath(filename), 'utf-8');
-const getFilesData = (...paths) => paths.map((fp) => {
+const getFilesData = (filepath) => {
   try {
-    return parser(readFile(fp), path.extname(fp)) || {};
+    return parser(readFile(filepath), path.extname(filepath)) || {};
   } catch (e) {
-    console.error(`${fp} not found!`);
-    throw e;
+    throw new Error(`File ${filepath} doesn't exist!`);
   }
-});
+};
 
 /*
 eslint no-param-reassign:
   ["error", { "props": true, "ignorePropertyModificationsFor": ["dicitionary"] }]
 */
-const makeFlatDiff = (minorData, majorData, dicitionary, parent = null) => {
-  const keys = _.union(_.keys(minorData), _.keys(majorData));
-
-  return keys.map((key) => {
-    let status = '';
-    if (!_.has(minorData, key)) status = 'added';
-    else if (!_.has(majorData, key)) status = 'deleted';
-    else if (minorData[key] === majorData[key]) status = 'unchanged';
-    else {
-      if (_.isObject(minorData[key]) && _.isObject(majorData[key])) {
-        const children = makeFlatDiff(minorData[key], majorData[key], dicitionary, key);
-        dicitionary[key] = { children };
+const genFlatDiff = (minorData, majorData) => {
+  const iter = (minor, major, dicitionary, parent = null) => {
+    const keys = _.sortBy(_.union(_.keys(minor), _.keys(major)));
+    return keys.map((key) => {
+      let status = 'original';
+      let value = minor[key];
+      if (!_.has(minor, key)) {
+        status = 'added';
+        value = major[key];
+      } else if (!_.has(major, key)) {
+        status = 'removed';
+      } else if (minor[key] !== major[key]) {
+        status = 'updated';
+        value = [minor[key], major[key]];
+        if (_.isObject(minor[key]) && _.isObject(major[key])) {
+          const children = iter(minor[key], major[key], dicitionary, key);
+          dicitionary[key] = { children };
+        }
       }
-      status = 'changed';
-    }
-
-    dicitionary[key] = { status, parent, ...dicitionary[key] };
-    return key;
-  });
-};
-
-const buildDiffTree = (minorData, majorData) => {
-  const dictionary = {};
-  makeFlatDiff(minorData, majorData, dictionary);
-
-  const iter = (minor, major, nodes) => {
-    const sortedNodes = _.sortBy(nodes);
-    return sortedNodes.reduce((tree, node) => {
-      const treeLevel = {};
-      switch (dictionary[node].status) {
-        case 'added':
-          treeLevel[`+ ${node}`] = major[node];
-          break;
-        case 'deleted':
-          treeLevel[`- ${node}`] = minor[node];
-          break;
-        case 'unchanged':
-          treeLevel[node] = major[node];
-          break;
-        case 'changed':
-          if (dictionary[node].children) {
-            treeLevel[node] = iter(minor[node], major[node], dictionary[node].children);
-          } else {
-            treeLevel[`- ${node}`] = minor[node];
-            treeLevel[`+ ${node}`] = major[node];
-          }
-          break;
-        default: break;
-      }
-      return { ...tree, ...treeLevel };
-    }, {});
+      dicitionary[key] = {
+        status, value, parent, ...dicitionary[key],
+      };
+      return key;
+    });
   };
+  const flatDiff = {};
+  iter(minorData, majorData, flatDiff);
 
-  const rootNodes = _.keys(dictionary).filter((key) => !dictionary[key].parent);
-  return iter(minorData, majorData, rootNodes);
+  return flatDiff;
 };
 
-const genDiff = (filepath1, filepath2, formater = stylish) => {
-  const data = getFilesData(filepath1, filepath2);
-  const diffTree = buildDiffTree(...data);
-  return formater(diffTree);
+const genDiff = (filepath1, filepath2, formatName = 'stylish') => {
+  const fileData1 = getFilesData(filepath1);
+  const fileData2 = getFilesData(filepath2);
+  const flatDiff = genFlatDiff(fileData1, fileData2);
+  return formatter(formatName)(flatDiff);
 };
 
 export default genDiff;
