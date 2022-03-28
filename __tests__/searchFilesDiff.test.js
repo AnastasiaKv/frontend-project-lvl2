@@ -2,7 +2,6 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { fileURLToPath } from 'url';
 import genDiff from '../index.js';
-import { stylish } from '../src/formaters.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -15,14 +14,20 @@ const jsonPath2 = 'file2.json';
 const ymlPath1 = 'file1.yml';
 const ymlPath2 = 'file2.yml';
 
-let expected = '';
+const expectedData = {
+  stylish: '',
+  plain: '',
+  json: '',
+};
 
 beforeAll(() => {
-  const rawdata = fs.readFileSync(getAbsolutePath('expected.json'), 'utf-8');
-  expected = stylish(JSON.parse(rawdata));
+  expectedData.stylish = fs.readFileSync(getAbsolutePath('expectedStylish.txt'), 'utf-8');
+  expectedData.plain = fs.readFileSync(getAbsolutePath('expectedPlain.txt'), 'utf-8');
+  expectedData.json = fs.readFileSync(getAbsolutePath('expectedJson.txt'), 'utf-8');
 });
 
-test('json format / relative pathes', () => {
+test('.json files/ relative and absolute pathes', () => {
+  const expected = expectedData.stylish;
   const actual = genDiff(
     getRelativePath(jsonPath1),
     getRelativePath(jsonPath2),
@@ -30,18 +35,31 @@ test('json format / relative pathes', () => {
   expect(actual).toEqual(expected);
 });
 
-test('json format / absolute pathes', () => {
+test('.yml files', () => {
+  const expected = expectedData.stylish;
   const actual = genDiff(
-    getAbsolutePath(jsonPath1),
-    getAbsolutePath(jsonPath2),
+    getRelativePath(ymlPath1),
+    getRelativePath(ymlPath2),
   );
   expect(actual).toEqual(expected);
 });
 
-test('yml format', () => {
+test('plain formatter check', () => {
+  const expected = expectedData.plain;
   const actual = genDiff(
-    getRelativePath(ymlPath1),
-    getRelativePath(ymlPath2),
+    getAbsolutePath(jsonPath1),
+    getAbsolutePath(ymlPath2),
+    'plain',
+  );
+  expect(actual).toEqual(expected);
+});
+
+test('json formatter check', () => {
+  const expected = expectedData.json;
+  const actual = genDiff(
+    getAbsolutePath(jsonPath1),
+    getAbsolutePath(ymlPath2),
+    'json',
   );
   expect(actual).toEqual(expected);
 });
