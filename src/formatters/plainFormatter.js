@@ -10,25 +10,15 @@ const buildAddedPropStr = (key, val) => `Property '${key}' was added with value:
 const buildUpdatedPropStr = (key, val) => `Property '${key}' was updated. From ${normalizeValue(val[0])} to ${normalizeValue(val[1])}`;
 
 export default (data) => {
-  const getPropertyPath = (key) => {
-    let propPath = key;
-    let propParent = data[key].parent;
-    while (propParent !== null) {
-      propPath = `${propParent}.${propPath}`;
-      propParent = data[propParent].parent;
-    }
-    return propPath;
-  };
-  const strLines = _.keys(data).map((key) => {
-    const propPath = getPropertyPath(key);
-    switch (data[key].status) {
+  const strLines = _.keys(data).map((propPath) => {
+    switch (data[propPath].status) {
       case 'added':
-        return buildAddedPropStr(propPath, data[key].value);
+        return buildAddedPropStr(propPath, data[propPath].value);
       case 'removed':
         return buildRemovedPropStr(propPath);
       case 'updated':
-        if (data[key].children) return '';
-        return buildUpdatedPropStr(propPath, data[key].value);
+        if (data[propPath].children) return '';
+        return buildUpdatedPropStr(propPath, data[propPath].value);
       default:
         return '';
     }

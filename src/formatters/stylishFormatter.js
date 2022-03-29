@@ -5,28 +5,28 @@ const buildTree = (diff) => {
     const treeLevel = {};
     switch (diff[node].status) {
       case 'added':
-        treeLevel[`+ ${node}`] = diff[node].value;
+        treeLevel[`+ ${diff[node].key}`] = diff[node].value;
         break;
       case 'removed':
-        treeLevel[`- ${node}`] = diff[node].value;
+        treeLevel[`- ${diff[node].key}`] = diff[node].value;
         break;
       case 'updated':
         if (diff[node].children) {
-          treeLevel[node] = iter(diff[node].children);
+          treeLevel[diff[node].key] = iter(diff[node].children);
         } else {
           const [oldVal, newVal] = diff[node].value;
-          treeLevel[`- ${node}`] = oldVal;
-          treeLevel[`+ ${node}`] = newVal;
+          treeLevel[`- ${diff[node].key}`] = oldVal;
+          treeLevel[`+ ${diff[node].key}`] = newVal;
         }
         break;
       default:
-        treeLevel[node] = diff[node].value;
+        treeLevel[diff[node].key] = diff[node].value;
         break;
     }
     return { ...tree, ...treeLevel };
   }, {});
 
-  const rootNodes = _.keys(diff).filter((key) => !diff[key].parent);
+  const rootNodes = _.keys(diff).filter((key) => !diff[key].parent.length);
   return iter(rootNodes);
 };
 

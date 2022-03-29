@@ -19,9 +19,10 @@ eslint no-param-reassign:
   ["error", { "props": true, "ignorePropertyModificationsFor": ["dicitionary"] }]
 */
 const genFlatDiff = (minorData, majorData) => {
-  const iter = (minor, major, dicitionary, parent = null) => {
+  const iter = (minor, major, dicitionary, parent = '') => {
     const keys = _.sortBy(_.union(_.keys(minor), _.keys(major)));
     return keys.map((key) => {
+      const propPath = (parent.length ? `${parent}.${key}` : key);
       let status = 'original';
       let value = minor[key];
       if (!_.has(minor, key)) {
@@ -33,14 +34,14 @@ const genFlatDiff = (minorData, majorData) => {
         status = 'updated';
         value = [minor[key], major[key]];
         if (_.isObject(minor[key]) && _.isObject(major[key])) {
-          const children = iter(minor[key], major[key], dicitionary, key);
-          dicitionary[key] = { children };
+          const children = iter(minor[key], major[key], dicitionary, propPath);
+          dicitionary[propPath] = { children };
         }
       }
-      dicitionary[key] = {
-        status, value, parent, ...dicitionary[key],
+      dicitionary[propPath] = {
+        status, key, value, parent, ...dicitionary[propPath],
       };
-      return key;
+      return propPath;
     });
   };
   const flatDiff = {};
