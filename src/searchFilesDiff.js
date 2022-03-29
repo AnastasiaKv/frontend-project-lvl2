@@ -14,40 +14,39 @@ const getFilesData = (filepath) => {
   }
 };
 
-/*
-eslint no-param-reassign:
-  ["error", { "props": true, "ignorePropertyModificationsFor": ["dicitionary"] }]
-*/
 const genFlatDiff = (minorData, majorData) => {
-  const iter = (minor, major, dicitionary, parent = '') => {
+  const dicitionary = {};
+
+  const iter = (minor, major, parent = '') => {
     const keys = _.sortBy(_.union(_.keys(minor), _.keys(major)));
     return keys.map((key) => {
       const propPath = (parent.length ? `${parent}.${key}` : key);
-      let status = 'original';
-      let value = minor[key];
+      const dicitionaryItem = {
+        status: 'original',
+        key,
+        value: minor[key],
+        parent,
+      };
       if (!_.has(minor, key)) {
-        status = 'added';
-        value = major[key];
+        dicitionaryItem.status = 'added';
+        dicitionaryItem.value = major[key];
       } else if (!_.has(major, key)) {
-        status = 'removed';
+        dicitionaryItem.status = 'removed';
       } else if (minor[key] !== major[key]) {
-        status = 'updated';
-        value = [minor[key], major[key]];
+        dicitionaryItem.status = 'updated';
+        dicitionaryItem.value = [minor[key], major[key]];
         if (_.isObject(minor[key]) && _.isObject(major[key])) {
-          const children = iter(minor[key], major[key], dicitionary, propPath);
-          dicitionary[propPath] = { children };
+          dicitionaryItem.children = iter(minor[key], major[key], propPath);
         }
       }
-      dicitionary[propPath] = {
-        status, key, value, parent, ...dicitionary[propPath],
-      };
+
+      dicitionary[propPath] = { ...dicitionaryItem };
       return propPath;
     });
   };
-  const flatDiff = {};
-  iter(minorData, majorData, flatDiff);
 
-  return flatDiff;
+  iter(minorData, majorData);
+  return dicitionary;
 };
 
 const genDiff = (filepath1, filepath2, formatName = 'stylish') => {

@@ -2,28 +2,25 @@ import _ from 'lodash';
 
 const buildTree = (diff) => {
   const iter = (nodes) => nodes.reduce((tree, node) => {
-    const treeLevel = {};
     switch (diff[node].status) {
       case 'added':
-        treeLevel[`+ ${diff[node].key}`] = diff[node].value;
-        break;
+        return { ...tree, [`+ ${diff[node].key}`]: diff[node].value };
       case 'removed':
-        treeLevel[`- ${diff[node].key}`] = diff[node].value;
-        break;
-      case 'updated':
+        return { ...tree, [`- ${diff[node].key}`]: diff[node].value };
+      case 'updated': {
         if (diff[node].children) {
-          treeLevel[diff[node].key] = iter(diff[node].children);
-        } else {
-          const [oldVal, newVal] = diff[node].value;
-          treeLevel[`- ${diff[node].key}`] = oldVal;
-          treeLevel[`+ ${diff[node].key}`] = newVal;
+          return { ...tree, [diff[node].key]: iter(diff[node].children) };
         }
-        break;
+        const [oldVal, newVal] = diff[node].value;
+        return {
+          ...tree,
+          [`- ${diff[node].key}`]: oldVal,
+          [`+ ${diff[node].key}`]: newVal,
+        };
+      }
       default:
-        treeLevel[diff[node].key] = diff[node].value;
-        break;
+        return { ...tree, [diff[node].key]: diff[node].value };
     }
-    return { ...tree, ...treeLevel };
   }, {});
 
   const rootNodes = _.keys(diff).filter((key) => !diff[key].parent.length);

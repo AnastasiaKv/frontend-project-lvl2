@@ -21,9 +21,12 @@ const expectedData = {
 };
 
 beforeAll(() => {
-  expectedData.stylish = fs.readFileSync(getAbsolutePath('expectedStylish.txt'), 'utf-8');
-  expectedData.plain = fs.readFileSync(getAbsolutePath('expectedPlain.txt'), 'utf-8');
-  expectedData.json = fs.readFileSync(getAbsolutePath('expectedJson.txt'), 'utf-8');
+  const stylish = fs.readFileSync(getAbsolutePath('expectedStylish.txt'), 'utf-8');
+  const plain = fs.readFileSync(getAbsolutePath('expectedPlain.txt'), 'utf-8');
+  const json = fs.readFileSync(getAbsolutePath('expectedJson.txt'), 'utf-8');
+  expectedData.stylish = stylish;
+  expectedData.plain = plain;
+  expectedData.json = json;
 });
 
 test('.json files/ relative and absolute pathes', () => {
