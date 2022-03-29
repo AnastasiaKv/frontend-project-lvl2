@@ -14,23 +14,8 @@ const jsonPath2 = 'file2.json';
 const ymlPath1 = 'file1.yml';
 const ymlPath2 = 'file2.yml';
 
-const expectedData = {
-  stylish: '',
-  plain: '',
-  json: '',
-};
-
-beforeAll(() => {
-  const stylish = fs.readFileSync(getAbsolutePath('expectedStylish.txt'), 'utf-8');
-  const plain = fs.readFileSync(getAbsolutePath('expectedPlain.txt'), 'utf-8');
-  const json = fs.readFileSync(getAbsolutePath('expectedJson.txt'), 'utf-8');
-  expectedData.stylish = stylish;
-  expectedData.plain = plain;
-  expectedData.json = json;
-});
-
 test('.json files/ relative and absolute pathes', () => {
-  const expected = expectedData.stylish;
+  const expected = fs.readFileSync(getAbsolutePath('expectedStylish.txt'), 'utf-8');
   const actual = genDiff(
     getRelativePath(jsonPath1),
     getRelativePath(jsonPath2),
@@ -39,7 +24,7 @@ test('.json files/ relative and absolute pathes', () => {
 });
 
 test('.yml files', () => {
-  const expected = expectedData.stylish;
+  const expected = fs.readFileSync(getAbsolutePath('expectedStylish.txt'), 'utf-8');
   const actual = genDiff(
     getRelativePath(ymlPath1),
     getRelativePath(ymlPath2),
@@ -48,7 +33,7 @@ test('.yml files', () => {
 });
 
 test('plain formatter check', () => {
-  const expected = expectedData.plain;
+  const expected = fs.readFileSync(getAbsolutePath('expectedPlain.txt'), 'utf-8');
   const actual = genDiff(
     getAbsolutePath(jsonPath1),
     getAbsolutePath(ymlPath2),
@@ -58,7 +43,7 @@ test('plain formatter check', () => {
 });
 
 test('json formatter check', () => {
-  const expected = expectedData.json;
+  const expected = fs.readFileSync(getAbsolutePath('expectedJson.txt'), 'utf-8');
   const actual = genDiff(
     getAbsolutePath(jsonPath1),
     getAbsolutePath(ymlPath2),

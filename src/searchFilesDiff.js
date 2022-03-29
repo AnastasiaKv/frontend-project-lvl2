@@ -19,6 +19,7 @@ const genFlatDiff = (minorData, majorData) => {
 
   const iter = (minor, major, parent = '') => {
     const keys = _.sortBy(_.union(_.keys(minor), _.keys(major)));
+
     return keys.map((key) => {
       const propPath = (parent.length ? `${parent}.${key}` : key);
       const dicitionaryItem = {
@@ -28,19 +29,16 @@ const genFlatDiff = (minorData, majorData) => {
         parent,
       };
       if (!_.has(minor, key)) {
-        dicitionaryItem.status = 'added';
-        dicitionaryItem.value = major[key];
+        _.assign(dicitionaryItem, { status: 'added', value: major[key] });
       } else if (!_.has(major, key)) {
-        dicitionaryItem.status = 'removed';
+        _.assign(dicitionaryItem, { status: 'removed' });
       } else if (minor[key] !== major[key]) {
-        dicitionaryItem.status = 'updated';
-        dicitionaryItem.value = [minor[key], major[key]];
+        _.assign(dicitionaryItem, { status: 'updated', value: [minor[key], major[key]] });
         if (_.isObject(minor[key]) && _.isObject(major[key])) {
-          dicitionaryItem.children = iter(minor[key], major[key], propPath);
+          _.assign(dicitionaryItem, { children: iter(minor[key], major[key], propPath) });
         }
       }
-
-      dicitionary[propPath] = { ...dicitionaryItem };
+      _.assign(dicitionary, { [propPath]: dicitionaryItem });
       return propPath;
     });
   };
