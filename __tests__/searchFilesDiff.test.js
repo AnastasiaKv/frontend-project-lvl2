@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import * as fs from 'fs';
 import * as path from 'path';
 import { fileURLToPath } from 'url';
@@ -6,60 +7,28 @@ import genDiff from '../index.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const getRelativePath = (filename) => path.join('__fixtures__', filename);
-const getAbsolutePath = (filename) => path.join(__dirname, '..', '__fixtures__', filename);
+const getFixturesPath = (filename) => path.join(__dirname, '..', '__fixtures__', filename);
+const readFile = (filepath) => fs.readFileSync(getFixturesPath(filepath), 'utf-8');
 
-const jsonPath1 = 'file1.json';
-const jsonPath2 = 'file2.json';
-const ymlPath1 = 'file1.yml';
-const ymlPath2 = 'file2.yml';
+const extensions = ['json', 'yml'];
+const expectedData = {
+  stylish: '',
+  plainh: '',
+  json: '',
+};
 
-test('.json files/ relative and absolute pathes', () => {
-  const expected = fs.readFileSync(getAbsolutePath('expectedStylish.txt'), 'utf-8');
-  const actual = genDiff(
-    getRelativePath(jsonPath1),
-    getRelativePath(jsonPath2),
-  );
-  expect(actual).toEqual(expected);
+beforeAll(() => {
+  _.assign(expectedData, { stylish: readFile('expectedStylish.txt') });
+  _.assign(expectedData, { plain: readFile('expectedPlain.txt') });
+  _.assign(expectedData, { json: readFile('expectedJson.txt') });
 });
 
-test('.yml files', () => {
-  const expected = fs.readFileSync(getAbsolutePath('expectedStylish.txt'), 'utf-8');
-  const actual = genDiff(
-    getRelativePath(ymlPath1),
-    getRelativePath(ymlPath2),
-  );
-  expect(actual).toEqual(expected);
-});
+test.each(extensions)('gendiff %i format file', (extname) => {
+  const beforeFile = getFixturesPath(`before.${extname}`);
+  const afterFile = getFixturesPath(`after.${extname}`);
 
-test('plain formatter check', () => {
-  const expected = fs.readFileSync(getAbsolutePath('expectedPlain.txt'), 'utf-8');
-  const actual = genDiff(
-    getAbsolutePath(jsonPath1),
-    getAbsolutePath(ymlPath2),
-    'plain',
-  );
-  expect(actual).toEqual(expected);
-});
-
-test('json formatter check', () => {
-  const expected = fs.readFileSync(getAbsolutePath('expectedJson.txt'), 'utf-8');
-  const actual = genDiff(
-    getAbsolutePath(jsonPath1),
-    getAbsolutePath(ymlPath2),
-    'json',
-  );
-  expect(actual).toEqual(expected);
-});
-
-test('file doesn\'t exist', () => {
-  expect(() => genDiff(
-    getRelativePath(jsonPath1),
-    'notExist.json',
-  )).toThrow();
-
-  expect(() => genDiff(
-    'notExist1.json',
-    'notExist2.json',
-  )).toThrow();
+  expect(genDiff(beforeFile, afterFile)).toEqual(expectedData.stylish);
+  expect(genDiff(beforeFile, afterFile, 'stylish')).toEqual(expectedData.stylish);
+  expect(genDiff(beforeFile, afterFile, 'plain')).toEqual(expectedData.plain);
+  expect(genDiff(beforeFile, afterFile, 'json')).toEqual(expectedData.json);
 });
