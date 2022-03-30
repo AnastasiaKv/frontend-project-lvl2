@@ -40,8 +40,13 @@ gendiff -f json filepath1 filepath2
 
 ## Demo
 
-[![asciicast](https://asciinema.org/a/477427.svg)](https://asciinema.org/a/477427)
-[![asciicast](https://asciinema.org/a/478035.svg)](https://asciinema.org/a/478035)
-[![asciicast](https://asciinema.org/a/481359.svg)](https://asciinema.org/a/481359)
-[![asciicast](https://asciinema.org/a/481360.svg)](https://asciinema.org/a/481360)
-[![asciicast](https://asciinema.org/a/481362.svg)](https://asciinema.org/a/481362)
+- #### gendiff description & gendiff of json flat object
+  [![asciicast](https://asciinema.org/a/477427.svg)](https://asciinema.org/a/477427)
+- #### gendiff of yaml flat object
+  [![asciicast](https://asciinema.org/a/478035.svg)](https://asciinema.org/a/478035)
+- #### gendiff of complex object
+  [![asciicast](https://asciinema.org/a/481359.svg)](https://asciinema.org/a/481359)
+- #### gendiff of complex object with plain format
+  [![asciicast](https://asciinema.org/a/481360.svg)](https://asciinema.org/a/481360)
+- #### gendiff of complex object with json format
+  [![asciicast](https://asciinema.org/a/481362.svg)](https://asciinema.org/a/481362)
