@@ -1,56 +1,28 @@
-import _ from 'lodash';
 import * as fs from 'fs';
 import * as path from 'path';
+import process from 'process';
 import parser from './parsers.js';
 import formatter from './formatters/index.js';
+import genFlatDiffTree from './genFlatDiffTree.js';
 
-const normalizePath = (fp) => (path.isAbsolute(fp) ? path.normalize(fp) : path.resolve(fp));
-const readFile = (filename) => fs.readFileSync(normalizePath(filename), 'utf-8');
-const getFilesData = (filepath) => {
-  try {
-    return parser(readFile(filepath), path.extname(filepath)) || {};
-  } catch (e) {
-    throw new Error(`File ${filepath} doesn't exist!`);
-  }
-};
-
-const genFlatDiff = (minorData, majorData) => {
-  const dicitionary = {};
-
-  const iter = (minor, major, parent = '') => {
-    const keys = _.sortBy(_.union(_.keys(minor), _.keys(major)));
-
-    return keys.map((key) => {
-      const propPath = (parent.length ? `${parent}.${key}` : key);
-      const dicitionaryItem = {
-        status: 'original',
-        key,
-        value: minor[key],
-        parent,
-      };
-      if (!_.has(minor, key)) {
-        _.assign(dicitionaryItem, { status: 'added', value: major[key] });
-      } else if (!_.has(major, key)) {
-        _.assign(dicitionaryItem, { status: 'removed' });
-      } else if (minor[key] !== major[key]) {
-        _.assign(dicitionaryItem, { status: 'updated', value: [minor[key], major[key]] });
-        if (_.isObject(minor[key]) && _.isObject(major[key])) {
-          _.assign(dicitionaryItem, { children: iter(minor[key], major[key], propPath) });
-        }
-      }
-      _.assign(dicitionary, { [propPath]: dicitionaryItem });
-      return propPath;
-    });
-  };
-
-  iter(minorData, majorData);
-  return dicitionary;
-};
+const normalizePath = (filepath) => path.resolve(process.cwd(), filepath);
+const readFile = (filepath) => fs.readFileSync(normalizePath(filepath), 'utf-8');
+const getFileExtname = (filepath) => path.extname(filepath).replace('.', '');
 
 const genDiff = (filepath1, filepath2, formatName = 'stylish') => {
-  const fileData1 = getFilesData(filepath1);
-  const fileData2 = getFilesData(filepath2);
-  const flatDiff = genFlatDiff(fileData1, fileData2);
+  const normalizedFilepath1 = normalizePath(filepath1);
+  const normalizedFilepath2 = normalizePath(filepath2);
+
+  const extname1 = getFileExtname(normalizedFilepath1);
+  const extname2 = getFileExtname(normalizedFilepath2);
+
+  const fileData1 = readFile(normalizedFilepath1);
+  const fileData2 = readFile(normalizedFilepath2);
+
+  const parsedFileData1 = parser(fileData1, extname1);
+  const parsedFileData2 = parser(fileData2, extname2);
+
+  const flatDiff = genFlatDiffTree(parsedFileData1, parsedFileData2);
   return formatter(formatName)(flatDiff);
 };
 
