@@ -7,22 +7,24 @@ const normalizeValue = (val) => {
 };
 const buildRemovedPropStr = (key) => `Property '${key}' was removed`;
 const buildAddedPropStr = (key, val) => `Property '${key}' was added with value: ${normalizeValue(val)}`;
-const buildUpdatedPropStr = (key, val) => `Property '${key}' was updated. From ${normalizeValue(val[0])} to ${normalizeValue(val[1])}`;
+const buildUpdatedPropStr = (key, oldValue, newValue) => `Property '${key}' was updated. From ${normalizeValue(oldValue)} to ${normalizeValue(newValue)}`;
 
-export default (data) => {
-  const strLines = _.keys(data).map((propPath) => {
-    switch (data[propPath].status) {
-      case 'added':
-        return buildAddedPropStr(propPath, data[propPath].value);
-      case 'removed':
-        return buildRemovedPropStr(propPath);
-      case 'updated':
-        if (data[propPath].children) return '';
-        return buildUpdatedPropStr(propPath, data[propPath].value);
-      default:
-        return '';
-    }
-  });
+const buildDiffStrings = (diff, parent = '') => diff.map((node) => {
+  const keyPath = parent ? `${parent}.${node.key}` : node.key;
+  switch (node.status) {
+    case 'added':
+      return buildAddedPropStr(keyPath, node.value);
+    case 'removed':
+      return buildRemovedPropStr(keyPath);
+    case 'updated':
+      return buildUpdatedPropStr(keyPath, node.oldValue, node.newValue);
+    case 'nested':
+      return buildDiffStrings(node.children, keyPath);
+    default:
+      return '';
+  }
+});
 
-  return strLines.filter((line) => line).join('\n');
-};
+export default (data) => _.flattenDeep(buildDiffStrings(data))
+  .filter((line) => line)
+  .join('\n');

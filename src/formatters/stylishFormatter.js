@@ -1,34 +1,28 @@
 import _ from 'lodash';
 
-const buildTree = (diff) => {
-  const iter = (nodes) => nodes.reduce((tree, node) => {
-    switch (diff[node].status) {
-      case 'added':
-        return { ...tree, [`+ ${diff[node].key}`]: diff[node].value };
-      case 'removed':
-        return { ...tree, [`- ${diff[node].key}`]: diff[node].value };
-      case 'updated': {
-        if (diff[node].children) {
-          return { ...tree, [diff[node].key]: iter(diff[node].children) };
-        }
-        const [oldVal, newVal] = diff[node].value;
-        return {
-          ...tree,
-          [`- ${diff[node].key}`]: oldVal,
-          [`+ ${diff[node].key}`]: newVal,
-        };
-      }
-      default:
-        return { ...tree, [diff[node].key]: diff[node].value };
+const buildDiffObject = (diff) => diff.reduce((tree, node) => {
+  switch (node.status) {
+    case 'added':
+      return { ...tree, [`+ ${node.key}`]: node.value };
+    case 'removed':
+      return { ...tree, [`- ${node.key}`]: node.value };
+    case 'nested': {
+      return { ...tree, [node.key]: buildDiffObject(node.children) };
     }
-  }, {});
-
-  const rootNodes = _.keys(diff).filter((key) => !diff[key].parent.length);
-  return iter(rootNodes);
-};
+    case 'updated': {
+      return {
+        ...tree,
+        [`- ${node.key}`]: node.oldValue,
+        [`+ ${node.key}`]: node.newValue,
+      };
+    }
+    default:
+      return { ...tree, [node.key]: node.value };
+  }
+}, {});
 
 export default (data, replacer = ' ', spacesCount = 2) => {
-  const tree = buildTree(data);
+  const diffObject = buildDiffObject(data);
   const iter = (currValue, depth) => {
     if (!_.isObject(currValue)) return `${currValue}`;
     const indentCount = depth * spacesCount + 2 * (depth - 1);
@@ -47,5 +41,5 @@ export default (data, replacer = ' ', spacesCount = 2) => {
     ].join('\n');
   };
 
-  return iter(tree, 1);
+  return iter(diffObject, 1);
 };
