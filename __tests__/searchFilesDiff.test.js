@@ -23,7 +23,7 @@ beforeAll(() => {
   _.assign(expectedData, { json: readFile('expectedJson.txt') });
 });
 
-test.each(extensions)('gendiff %i format file', (extname) => {
+test.each(extensions)('gendiff %s format file', (extname) => {
   const beforeFile = getFixturesPath(`before.${extname}`);
   const afterFile = getFixturesPath(`after.${extname}`);
 
