@@ -5,6 +5,6 @@ export default (data, ext) => {
     case 'yml':
     case 'yaml': return yaml.load(data);
     case 'json': return JSON.parse(data);
-    default: return data;
+    default: throw new Error(`Unknown file format: ${ext}.`);
   }
 };
