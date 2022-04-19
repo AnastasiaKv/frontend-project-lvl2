@@ -7,38 +7,26 @@
 
 # frontend-project-lvl2
 
-#### File's Data compare tool. Shows the differences between the objects.
+## Compares two configuration files and shows a difference.
 
-## Setup
+### Setup
 
-```sh
-make install
-```
+- Install packages `make install`
+- Run tests `make test`
+- Show test-coverage `make test-coverage`
+- Run linter `make lint`
+- Publish `make publish`
+- Create a symlink in the global folder `npm link`
 
-## Run tests
+### Using
 
-```sh
-make test
-```
+- Utility description & help `gendiff -h`
+- Generate the difference of two files in the following formats:
+  - stylish [default]: `gendiff filepath1 filepath2`
+  - plain: `gendiff -f plain filepath1 filepath2`
+  - json: `gendiff -f json filepath1 filepath2`
 
-## Run
-
-- ### Create a symlink in the global folder
-
-```sh
-npm link
-```
-
-- ### Use as utility
-
-```sh
-gendiff -h
-gendiff filepath1 filepath2
-gendiff -f plain filepath1 filepath2
-gendiff -f json filepath1 filepath2
-```
-
-## Demo
+## Demos
 
 - #### gendiff description & gendiff of json flat object
   [![asciicast](https://asciinema.org/a/477427.svg)](https://asciinema.org/a/477427)
