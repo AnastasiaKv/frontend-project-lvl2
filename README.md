@@ -1,3 +1,5 @@
+# Difference Generator
+
 ### Tests and linter status:
 
 [![Actions Status](https://github.com/AnastasiaKv/frontend-project-lvl2/workflows/hexlet-check/badge.svg)](https://github.com/AnastasiaKv/frontend-project-lvl2/actions)
@@ -5,11 +7,13 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/ea3eaec9ef65407b12b3/maintainability)](https://codeclimate.com/github/AnastasiaKv/frontend-project-lvl2/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/ea3eaec9ef65407b12b3/test_coverage)](https://codeclimate.com/github/AnastasiaKv/frontend-project-lvl2/test_coverage)
 
-# frontend-project-lvl2
+#### This is a program that recognizes the difference between two data structures (similar to the mechanism for automatically tracking changes in configuration files).
 
-## Compares two configuration files and shows a difference.
+#### Utility features:
+* Support for different input formats: yaml, json
+* Report generation in plain text, style and json
 
-### Setup
+## Setup
 
 - Install packages `make install`
 - Run tests `make test`
@@ -18,7 +22,7 @@
 - Publish `make publish`
 - Create a symlink in the global folder `npm link`
 
-### Using
+## Using
 
 - Utility description & help `gendiff -h`
 - Generate the difference of two files in the following formats:
